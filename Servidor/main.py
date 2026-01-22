@@ -1,6 +1,9 @@
 # IMPORTS RELACIONADOS AO BANCO E MODELO
 from typing import Optional
 from sqlmodel import SQLModel, Field, create_engine, Session, select
+from typing import List
+from fastapi import FastAPI, HTTPException, Depends
+from sqlmodel import Session, select
 
 # --- CONFIGURAÇÃO DO BANCO DE DADOS  ---
 sqlite_file_name = "database.db"
@@ -23,3 +26,42 @@ class Cliente(SQLModel, table=True):
     tempo_cadastro: int
     username: str
     password: str
+
+app = FastAPI(
+    title="Sistema de Vendas - API de Gestão de Clientes",
+    description="API desenvolvida para o projeto do 2º Bimestre.",
+    version="1.0.0"
+)
+
+# --- INICIALIZAÇÃO DA API ---
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
+
+# --- ROTAS DE LEITURA (Pessoa C) ---
+
+@app.get("/")
+def read_root():
+    return {"status": "online"}
+
+@app.get("/clientes", response_model=List[Cliente])
+def listar_clientes(session: Session = Depends(get_session)):
+    return session.exec(select(Cliente)).all()
+
+@app.get("/clientes/mais-antigo", response_model=Cliente)
+def cliente_mais_antigo(session: Session = Depends(get_session)):
+    cliente = session.exec(
+        select(Cliente).order_by(Cliente.tempo_cadastro.desc())
+    ).first()
+
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Nenhum cliente cadastrado")
+    return cliente
+
+@app.get("/clientes/{cliente_id}", response_model=Cliente)
+def buscar_cliente(cliente_id: int, session: Session = Depends(get_session)):
+    cliente = session.get(Cliente, cliente_id)
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+    return cliente
+
