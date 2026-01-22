@@ -12,10 +12,11 @@ Este projeto consiste em uma API REST para gestão de clientes e um cliente inte
    `uvicorn server.main:app --reload`
 
 3. Em outro terminal, rode o cliente:
-   `python client/cliente.py`
+   `python clientes/cliente.py`
 
 ## Tecnologias Utilizadas
 - **FastAPI**: Framework da API.
 - **SQLModel & SQLite**: Banco de dados relacional.
 - **Rich**: Interface visual no terminal.
 - **Requests**: Comunicação Cliente-Servidor.
+
