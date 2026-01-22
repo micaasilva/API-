@@ -20,3 +20,4 @@ Este projeto consiste em uma API REST para gestão de clientes e um cliente inte
 - **Rich**: Interface visual no terminal.
 - **Requests**: Comunicação Cliente-Servidor.
 
+
