@@ -154,5 +154,6 @@ def main():
             console.print("[blue]Saindo... Até logo![/blue]")
             break
 
-if _name_ == "_main_":
+if __name__ == "__main__":
+
     main()
