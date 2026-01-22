@@ -9,10 +9,10 @@ Este projeto consiste em uma API REST para gestão de clientes e um cliente inte
    `pip install -r requirements.txt`
 
 2. Inicie o servidor:
-   `uvicorn server.main:app --reload`
+   `uvicorn Servidor.main:app --reload`
 
 3. Em outro terminal, rode o cliente:
-   `python clientes/cliente.py`
+   `python cliente/cliente.py`
 
 ## Tecnologias Utilizadas
 - **FastAPI**: Framework da API.
