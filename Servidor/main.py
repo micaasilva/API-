@@ -4,6 +4,8 @@ from sqlmodel import SQLModel, Field, create_engine, Session, select
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends
 from sqlmodel import Session, select
+from fastapi import HTTPException, status, Depends
+from sqlmodel import Session
 
 # --- CONFIGURAÇÃO DO BANCO DE DADOS  ---
 sqlite_file_name = "database.db"
@@ -64,4 +66,35 @@ def buscar_cliente(cliente_id: int, session: Session = Depends(get_session)):
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
     return cliente
+# --- ROTAS DE ESCRITA E MODIFICAÇÃO (Pessoa B) ---
 
+@app.post("/clientes", response_model=Cliente, status_code=status.HTTP_201_CREATED)
+def criar_cliente(cliente: Cliente, session: Session = Depends(get_session)):
+    session.add(cliente)
+    session.commit()
+    session.refresh(cliente)
+    return cliente
+
+@app.patch("/clientes/{cliente_id}", response_model=Cliente)
+def atualizar_cliente(cliente_id: int, dados_atualizacao: dict, session: Session = Depends(get_session)):
+    cliente = session.get(Cliente, cliente_id)
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+    for key, value in dados_atualizacao.items():
+        if hasattr(cliente, key):
+            setattr(cliente, key, value)
+
+    session.commit()
+    session.refresh(cliente)
+    return cliente
+
+@app.delete("/clientes/{cliente_id}")
+def remover_cliente(cliente_id: int, session: Session = Depends(get_session)):
+    cliente = session.get(Cliente, cliente_id)
+    if not cliente:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+    session.delete(cliente)
+    session.commit()
+    return {"message": "Cliente removido com sucesso"}
